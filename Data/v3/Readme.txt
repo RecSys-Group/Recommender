@@ -1,0 +1,16 @@
+v2_dense_records
+去除低频数据的记录
+v2_feature_rating
+根据EFM计算的每个商品不同属性的得分
+v2_features
+属性列表
+v2_formatted_records
+格式化后的记录
+v2_items
+商品列表
+v2_users
+用户列表
+v2_test_records
+测试集合
+v2_train_records
+训练集合

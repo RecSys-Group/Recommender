@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../bpr/.idea/bpr.iml" filepath="$PROJECT_DIR$/../bpr/.idea/bpr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/rs.iml" filepath="$PROJECT_DIR$/.idea/rs.iml" />
+    </modules>
+  </component>
+</project>

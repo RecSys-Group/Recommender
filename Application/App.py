@@ -12,30 +12,31 @@ from Config.Config import Config
 class App:
 
     def start(self):
-        config = Config('..\Config\config')
-
+        # config = Config('..\Config\configOfYelp')
+        # config = Config('..\Config\configOfV3')
+        config = Config('..\Config\configOf6')
         fileDataModel = FileDataModel(config)
 
-        # top = TopN(fileDataModel, popfile)
+        # top = TopN(fileDataModel)
         # top.train()
         # eval = Eval(top)
         # eval.F1_score_Hit_ratio()
         # eval.NDGG_k()
 
-        nmf = NMF(fileDataModel)
-        nmf.train()
-        eval = Eval(nmf)
-        eval.F1_score_Hit_ratio()
-        eval.NDGG_k()
-
-        # sim = Similarity('COSINE')
-        # usercf = UserCF(fileDataModel, sim)
-        # usercf.train()
-        # eval = Eval(usercf)
+        # nmf = NMF(fileDataModel, 100)
+        # nmf.train()
+        # eval = Eval(nmf)
         # eval.F1_score_Hit_ratio()
         # eval.NDGG_k()
+
+        sim = Similarity('COSINE')
+        usercf = UserCF(fileDataModel, sim)
+        usercf.train()
+        eval = Eval(usercf)
+        eval.F1_score_Hit_ratio()
+        eval.NDGG_k()
 
 if __name__ == '__main__':
     app = App()
     app.start()
-    print app.nmf.recommend(81)
+    # print app.nmf.recommend(81)

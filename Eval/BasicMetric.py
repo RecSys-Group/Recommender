@@ -6,13 +6,10 @@ from RecommendationAlg import TopN
 
 class Eval:
     def __init__(self, recAlg):
-        self.recommend_list = []
-        self.purchased_list = []
-        for row in recAlg.dataModel.test.values:
-            userID = int(float(row[1]))
-            self.recommend_list.append(recAlg.recommend(userID))
-            pids = recAlg.dataModel.getItemIDsFromUserInTest(userID)
-            self.purchased_list.append(pids)
+        self.recommend_list = recAlg.recommendAllUserInTest()
+        self.purchased_list = recAlg.dataModel.getItemIDsForEachUserInTest()
+        print self.recommend_list[0]
+
 
     def F1_score_Hit_ratio(self):
         user_number = len(self.recommend_list)

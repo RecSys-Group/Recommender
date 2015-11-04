@@ -1,0 +1,9 @@
+users,D:\Desktop\recommender\Data\6\user.csv
+items,D:\Desktop\recommender\Data\6\item.csv
+train,D:\Desktop\recommender\Data\6\train.csv
+test,D:\Desktop\recommender\Data\6\test.csv
+pop,D:\Desktop\recommender\Data\6\pop
+initpu,D:\Desktop\recommender\Data\6\pu
+initqi,D:\Desktop\recommender\Data\6\qi
+
+

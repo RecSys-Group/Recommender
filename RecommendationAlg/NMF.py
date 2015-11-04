@@ -12,18 +12,26 @@ class NMF:
     def __init__(self, dataModel, feature_dims=10):
         print "NMF begin"
         self.dataModel = dataModel
-        self.featrue_dims = feature_dims
-        temp = math.sqrt(self.featrue_dims)
-        self.qi = [[(0.1 * random.random() / temp) for j in range(self.featrue_dims)] for i in range(self.dataModel.getItemsNum())]
-        self.pu = [[(0.1 * random.random() / temp) for j in range(self.featrue_dims)] for i in range(self.dataModel.getUsersNum())]
+        self.feature_dims = feature_dims
+        temp = math.sqrt(self.feature_dims)
+        self.qi = [[(0.1 * random.random() / temp) for j in range(self.feature_dims)] for i in range(self.dataModel.getItemsNum())]
+        self.pu = [[(0.1 * random.random() / temp) for j in range(self.feature_dims)] for i in range(self.dataModel.getUsersNum())]
+
+    def predict(self, uid, iid):
+        return self.InerProduct(self.pu[uid], self.qi[iid])
 
     def recommend(self, uid, N=5):
         predict_scores = []
         for i in range(self.dataModel.getItemsNum()):
-            s = self.InerProduct(self.pu[uid], self.qi[i])
-            predict_scores.append(s)
+            predict_scores.append(self.predict(uid, i))
         topN = np.argsort(np.array(predict_scores))[-1:-N-1:-1]
         return topN
+
+    def recommendAllUserInTest(self, N=5):
+        recList = []
+        for uid in self.dataModel.getUserIDsInTest():
+            recList.append(self.recommend(uid, N))
+        return recList
 
     def InerProduct(self, v1, v2):
         result = 0
@@ -32,16 +40,16 @@ class NMF:
         return result
 
     def train(self):
-        print 'begin'
-        V = spr.csr_matrix(self.dataModel.ratingMatrixOfTrain)
-        model = ProjectedGradientNMF(n_components=self.featrue_dims, max_iter=1000, nls_max_iter=10000)
+        print 'NMF training'
+        V = self.dataModel.getTrain()
+        model = ProjectedGradientNMF(n_components=self.feature_dims, max_iter=1000, nls_max_iter=10000)
         self.pu = model.fit_transform(V)
         self.qi = model.fit(V).components_.transpose()
         print model.reconstruction_err_
         t = pd.DataFrame(np.array(self.pu))
-        t.to_csv('nmf_pu')
+        t.to_csv(self.dataModel.conf.get('initpu'))
         t = pd.DataFrame(np.array(self.qi))
-        t.to_csv('nmf_qi')
+        t.to_csv(self.dataModel.conf.get('initqi'))
         print("model generation over")
 
 if __name__ == '__main__':

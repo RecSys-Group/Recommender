@@ -5,10 +5,10 @@ from DataModel.FileDataModel import FileDataModel
 
 class TopN:
 
-    def __init__(self, dataModel, popfile):
+    def __init__(self, dataModel):
         print "TopN begin"
         self.dataModel = dataModel
-        self.popfile = popfile
+        self.popfile = dataModel.conf.get('pop')
 
     def gen_items_popular(self, hasTimes=False):
         print 'gen_popular!'
@@ -17,7 +17,8 @@ class TopN:
             self.popItems = pd.read_csv(self.popfile)
         else:
             itempopular = np.zeros(self.dataModel.getItemsNum())
-            for row in self.dataModel.train.values:
+            train = pd.read_csv(self.dataModel.conf.get('train'))
+            for row in train.values:
                 print row
                 iid = int(float(row[2]))
                 times = int(float(row[3])) if hasTimes else 1
@@ -31,6 +32,10 @@ class TopN:
     def train(self):
         self.gen_items_popular()
         self.topN = np.argsort(np.array(self.popItems.iloc[:, 1]))[-1:-self.dataModel.getItemsNum()-1:-1]
+
+    def recommendAllUserInTest(self, N=5):
+        result = self.recommend(N)
+        return [result] * self.dataModel.getUsersNumInTest()
 
 if __name__ == '__main__':
     users = 'D:/Desktop/recommender/Data/v3/v3_users'

@@ -1,15 +1,17 @@
 __author__ = 'Jerry'
 
 import numpy as np
-from DataModel.FileDataModel import FileDataModel
-from Similarity.Similarity import Similarity
 
-class UserCF:
+from DataModel.FileDataModel import *
+from utils.Similarity import Similarity
+from BaseAlg import BaseAlg
 
-    def __init__(self, dataModel, similarity, neighborNum=5):
-        self.dataModel = dataModel
-        self.similarity = similarity
-        self.neighborNum = neighborNum
+class UserCF(BaseAlg):
+
+    def __init__(self, dataModel, paras):
+        super(UserCF, self).__init__(dataModel, 'UserCF')
+        self.similarity = Similarity(paras.get('similarity', 'COSINE'))
+        self.neighborNum = int(float(paras['neighbor_num']))
 
     def train(self):
         usersNum = self.dataModel.getUsersNum()
@@ -46,16 +48,6 @@ class UserCF:
         for uid in self.dataModel.getUserIDsInTest():
             recList.append(self.recommend(uid, N))
         return recList
+
 if __name__ == '__main__':
-    users = 'D:/Desktop/recommender/Data/v3/v3_users'
-    items = 'D:/Desktop/recommender/Data/v3/v3_items'
-    train = 'D:/Desktop/recommender/Data/v3/v3_train_records'
-    test = 'D:/Desktop/recommender/Data/v3/v3_test_records'
-    fileDataModel = FileDataModel(users, items, train, test)
-    sim = Similarity('COSINE')
-    alg = UserCF(fileDataModel, sim)
-    alg.train()
-    print fileDataModel.getItemIDsFromUserInTrain(243)
-    print alg.recommend(81)
-    print alg.predict(81, 169)
-    print alg.predict(81, 364)
+    pass

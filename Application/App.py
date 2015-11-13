@@ -1,42 +1,38 @@
 __author__ = 'Jerry'
 
+from DataModel.FileDataModel import *
+from Eval.Evaluation import Eval
+from utils.Config import Config
+from RecommendationAlg.SVD import SVD
+from RecommendationAlg.LFM import LFM
 from RecommendationAlg.TopN import TopN
-from DataModel.FileDataModel import FileDataModel
-from Eval.BasicMetric import Eval
 from RecommendationAlg.NMF import NMF
 from RecommendationAlg.UserCF import UserCF
-from Similarity.Similarity import Similarity
+from utils.Similarity import *
 import pandas as pd
-from Config.Config import Config
+from RecommendationAlg.AlgFactory import AlgFactory
 
 class App:
 
+    def __init__(self):
+        self.config = Config()
+        self.config.from_ini('../Application/conf')
+        self.dataModel = FileDataModelInMatrix(self.config.data)
+        # fileDataModelInRow = FileDataModelInRow(config)
+
     def start(self):
-        # config = Config('..\Config\configOfYelp')
-        # config = Config('..\Config\configOfV3')
-        config = Config('..\Config\configOf6')
-        fileDataModel = FileDataModel(config)
-
-        # top = TopN(fileDataModel)
-        # top.train()
-        # eval = Eval(top)
-        # eval.F1_score_Hit_ratio()
-        # eval.NDGG_k()
-
-        # nmf = NMF(fileDataModel, 100)
-        # nmf.train()
-        # eval = Eval(nmf)
-        # eval.F1_score_Hit_ratio()
-        # eval.NDGG_k()
-
-        sim = Similarity('COSINE')
-        usercf = UserCF(fileDataModel, sim)
-        usercf.train()
-        eval = Eval(usercf)
-        eval.F1_score_Hit_ratio()
-        eval.NDGG_k()
+        results = []
+        indexs = []
+        for algName in self.config.algList:
+            for para in self.config.paras[algName].iter():
+                alg = AlgFactory.create(algName, self.dataModel, para)
+                alg.train()
+                eval = Eval(alg)
+                results.append(eval.evalAll())
+                indexs.append(algName+str(para))
+        self.results = pd.DataFrame(results, index=indexs)
+        print self.results
 
 if __name__ == '__main__':
     app = App()
     app.start()
-    # print app.nmf.recommend(81)

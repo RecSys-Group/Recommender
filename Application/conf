@@ -1,0 +1,27 @@
+[data]
+dataset = D:\Desktop\recommender\Data\tinytest
+users = uid.csv
+items = iid.csv
+train = train.csv
+test = test.csv
+pop = pop
+
+[algorithms]
+all = TopN|NMF|SVD|UserCF
+
+[TopN]
+
+[NMF]
+feature_dims = 10
+
+[LFM]
+feature_dims = 10
+steps = 20
+gamma = 0.04
+lambda = 0.15
+
+[SVD]
+feature_dims = 10
+
+[UserCF]
+neighbor_num = 5

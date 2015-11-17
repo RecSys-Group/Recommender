@@ -1,9 +1,0 @@
-users,D:\Desktop\recommender\Data\v3\v3_users
-items,D:\Desktop\recommender\Data\v3\v3_items
-train,D:\Desktop\recommender\Data\v3\v3_test_records
-test,D:\Desktop\recommender\Data\v3\v3_train_records
-pop,D:\Desktop\recommender\Data\v3\pop
-initpu,D:\Desktop\recommender\Data\v3\pu
-initqi,D:\Desktop\recommender\Data\v3\qi
-
-

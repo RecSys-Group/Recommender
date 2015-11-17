@@ -1,9 +1,0 @@
-users,D:\Desktop\recommender\Data\yelp\user.csv
-items,D:\Desktop\recommender\Data\yelp\item.csv
-test,D:\Desktop\recommender\Data\yelp\train.csv
-test,D:\Desktop\recommender\Data\yelp\test.csv
-pop,D:\Desktop\recommender\Data\yelp\pop
-initpu,D:\Desktop\recommender\Data\yelp\pu
-initqi,D:\Desktop\recommender\Data\yelp\qi
-
-

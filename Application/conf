@@ -12,7 +12,7 @@ all = TopN|NMF|SVD|UserCF
 [TopN]
 
 [NMF]
-feature_dims = 10
+feature_dims = 10|30|
 
 [LFM]
 feature_dims = 10

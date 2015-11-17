@@ -1,5 +1,5 @@
 [data]
-dataset = D:\Desktop\recommender\Data\tinytest
+dataset = ..\Data\tinytest
 users = uid.csv
 items = iid.csv
 train = train.csv

@@ -1,0 +1,14 @@
+,0
+0,TopN
+1,TopN(n=5)
+2,"[mean: 0.01643, std: 0.00300, params: {'n': 5}]"
+3,UserCF
+4,"UserCF(n=5, neighbornum=5)"
+5,"[mean: 0.02206, std: 0.00188, params: {'neighbornum': 5, 'n': 5}]"
+6,NMF
+7,"NMF(factors=50, n=5)"
+8,"[mean: 0.02335, std: 0.00354, params: {'n': 5, 'factors': 50}]"
+9,LFM
+10,"LFM(factors=50, itemregular=0.001, iter=20, learningrate=0.000234238873663,
+  n=5, userregular=0.001)"
+11,"[mean: 0.01218, std: 0.00265, params: {'factors': 50, 'iter': 20, 'n': 5, 'learningrate': 0.001, 'itemregular': 0.001, 'userregular': 0.001}]"

@@ -7,21 +7,22 @@ test = test.csv
 pop = pop
 
 [algorithms]
-all = TopN|NMF|SVD|UserCF
+all = TopN|NMF|UserCF|LFM
 
 [TopN]
-
+n = [5]
 [NMF]
-feature_dims = 10|30|
-
-[LFM]
-feature_dims = 10
-steps = 20
-gamma = 0.04
-lambda = 0.15
-
-[SVD]
-feature_dims = 10
-
+n = [5]
+factors = [50]
 [UserCF]
-neighbor_num = 5
+n = [5]
+neighborNum = [5]
+[LFM]
+n = [5]
+factors = [50]
+learningrate = [0.001]
+userregular = [0.001]
+itemregular = [0.001]
+iter = [20]
+
+

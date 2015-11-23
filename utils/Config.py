@@ -54,7 +54,7 @@ class Config:
                 para = {}
                 opts = conf.options(alg)
                 for opt in opts:
-                    para[opt] = conf.get(alg, opt).split(splitString)
+                    para[opt] = [eval(i) for i in conf.get(alg, opt).split(splitString)]
                 self.paras[alg] = Parameter(para)
 
         # #read by type

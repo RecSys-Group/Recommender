@@ -1,43 +1,71 @@
 import numpy as np
 import pandas as pd
 import os
-from DataModel.FileDataModel import *
-from BaseAlg import BaseAlg
+from sklearn.base import BaseEstimator
+from sklearn import cross_validation
+from sklearn import metrics
+from DataModel.MemeryDataModel import *
+from Eval.Evaluation import *
+from sklearn import grid_search
 
-class TopN(BaseAlg):
+class TopN(BaseEstimator):
 
-    def __init__(self, dataModel, paras):
-        print "TopN begin"
-        super(TopN, self).__init__(dataModel, 'TopN')
-        self.popfile = self.dataModel.getPopFile()
+    def __init__(self, n=5):
+        self.n = n
 
-    def gen_items_popular(self, hasTimes=False):
-        print 'gen_popular!'
-        if os.path.exists(self.popfile):
-            print 'items_popularity has been generated!'
-            self.popItems = pd.read_csv(self.popfile)
-        else:
-            itempopular = np.zeros(self.dataModel.getItemsNum())
-            for row in self.dataModel.train.values:
-                # print row
-                iid = int(float(row[2]))
-                times = int(float(row[3])) if hasTimes else 1
-                itempopular[iid] += times
-            self.popItems = pd.DataFrame(itempopular)
-            self.popItems.to_csv(self.popfile)
+    def gen_items_popular(self, trainSamples, trainTargets, hasTimes=False):
+        self.dataModel = MemeryDataModel(trainSamples, trainTargets)
+        itempopular = np.zeros(self.dataModel.getItemsNum())
+        uids = self.dataModel.getData().nonzero()[0]
+        iids = self.dataModel.getData().nonzero()[1]
+        for i in range(len(iids)):
+            iid = iids[i]
+            itempopular[iid] += 1
+        self.popItems = itempopular
 
-    def recommend(self, userID=None, N=5):
-        return self.topN[:N]
+    def predict(self, testSamples):
+        recommend_lists = []
+        for user_item in testSamples:
+            if self.dataModel.getIidByItem(user_item[1]) in self.topN[:self.n]:
+                recommend_lists.append(1)
+            else:
+                recommend_lists.append(0)
+        return recommend_lists
 
-    def train(self):
-        self.gen_items_popular()
-        self.topN = np.argsort(np.array(self.popItems.iloc[:, 1]))[-1:-self.dataModel.getItemsNum()-1:-1]
+    def fit(self, trainSamples, trainTargets):
+        self.gen_items_popular(trainSamples, trainTargets)
+        self.topN = np.argsort(np.array(self.popItems))[-1::-1]
+        return self
 
-    def recommendAllUserInTest(self, N=5):
-        result = self.recommend(N)
-        return [result] * self.dataModel.getUsersNumInTest()
+    def score(self, testSamples, trueLabels):
+        trueList = []
+        recommendList= []
+
+        user_unique = list(set(np.array(testSamples)[:,0]))
+        for u in user_unique:
+            uTrueIndex = np.argwhere(np.array(testSamples)[:,0] == u)[:,0]
+            true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
+            #true = list(np.array(testSamples)[uTrueIndex][:,1])
+            trueList.append(true)
+            recommendList.append(self.topN[:self.n])
+        e = Eval()
+        result = e.evalAll(trueList, recommendList)
+        print 'TopN result:'+'('+str(self.n)+')'+str((result)['F1'])
+        return (result)['F1']
+
 
 if __name__ == '__main__':
-    pass
+    tp = TopN()
+    data = pd.read_csv('../Data/tinytest/format.csv')
+    samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
+    targets = [int(i) for i in data.values[:,3]]
+    parameters = {'n':[5,10,15,20]}
+
+    clf = grid_search.GridSearchCV(tp, parameters,cv=5)
+    clf.fit(samples, targets)
+    print(clf.grid_scores_)
+
+
+
 
 

@@ -158,5 +158,7 @@ class FileDataModelInMatrix(BaseDataModel):
 
     def getPopFile(self):
         return os.path.join(self.conf.get('dataset'), self.conf.get('pop'))
+
+
 if __name__ == "__main__":
     pass

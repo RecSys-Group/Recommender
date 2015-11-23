@@ -1,16 +1,15 @@
 from __future__ import division
 from numpy import *
 import pandas as pd
-from DataModel import FileDataModel
-from RecommendationAlg import TopN
+#from DataModel import FileDataModel
+
 
 class Eval:
-    def __init__(self, recAlg):
-        self.recommend_list = recAlg.recommendAllUserInTest()
-        self.purchased_list = recAlg.dataModel.getItemIDsForEachUserInTest()
+    def __init__(self):
+       pass
 
-    def F1_score_Hit_ratio(self):
-        user_number = len(self.recommend_list)
+    def F1_score_Hit_ratio(self, recommend_list, purchased_list):
+        user_number = len(recommend_list)
         correct = []
         co_length = []
         re_length = []
@@ -21,14 +20,14 @@ class Eval:
         hit_number = 0
         for i in range(user_number):
             temp = []
-            for j in self.recommend_list[i]:
-                if j in self.purchased_list[i]:
+            for j in recommend_list[i]:
+                if j in purchased_list[i]:
                     temp.append(j)
             if len(temp):
                 hit_number = hit_number + 1
             co_length.append(len(temp))
-            re_length.append(len(self.recommend_list[i]))
-            pu_length.append(len(self.purchased_list[i]))
+            re_length.append(len(recommend_list[i]))
+            pu_length.append(len(purchased_list[i]))
             correct.append(temp)
 
         for i in range(user_number):
@@ -47,25 +46,23 @@ class Eval:
         # print 'Recalls are :' + str(r)
         self.f1 = array(f).mean()
         return self.f1, self.hit_ratio
-
-    def NDGG_k(self):
-        user_number = len(self.recommend_list)
+    def NDGG_k(self, recommend_list, purchased_list):
+        user_number = len(recommend_list)
         u_ndgg = []
         for i in range(user_number):
             temp = 0
             Z_u = 0
-            for j in range(len(self.recommend_list[i])):
+            for j in range(len(recommend_list[i])):
                 Z_u = Z_u + 1 / log2(j + 2)
-                if self.recommend_list[i][j] in self.purchased_list[i]:
+                if recommend_list[i][j] in purchased_list[i]:
                     temp = temp + 1 / log2(j + 2)
             temp = temp / Z_u
             u_ndgg.append(temp)
         self.NDCG = array(u_ndgg).mean()
         return self.NDCG
-
-    def evalAll(self):
-        self.F1_score_Hit_ratio()
-        self.NDGG_k()
+    def evalAll(self,recommend_list, purchased_list):
+        self.F1_score_Hit_ratio(recommend_list, purchased_list)
+        self.NDGG_k(recommend_list, purchased_list)
         return {'F1': self.f1, 'NDCG': self.NDCG}
 
 if __name__ == '__main__':

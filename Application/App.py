@@ -5,7 +5,6 @@ import Queue
 import threading
 import datetime
 
-
 from sklearn.base import BaseEstimator
 from sklearn import cross_validation
 from sklearn import metrics
@@ -18,6 +17,7 @@ import utils.MulThreading as Mul
 from RecommendationAlg.AlgFactory import AlgFactory
 from RecommendationAlg.TopN import TopN
 result = []
+
 class App:
 
     def __init__(self):

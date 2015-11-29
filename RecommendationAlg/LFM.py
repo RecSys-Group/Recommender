@@ -26,7 +26,7 @@ class LFM(BaseEstimator):
         recList = []
         for user_item in testSamples:
             uid = self.dataModel.getUidByUser(user_item[0])
-            recList.append(self.recommend(uid, self.n))
+            recList.append(self.recommend(uid))
         return recList
 
     def fit(self, trainSamples, trainTargets):
@@ -78,22 +78,23 @@ class LFM(BaseEstimator):
         user_unique = list(set(np.array(testSamples)[:,0]))
         for u in user_unique:
             uTrueIndex = np.argwhere(np.array(testSamples)[:,0] == u)[:,0]
-            true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
-            #true = list(np.array(testSamples)[uTrueIndex][:,1])
+            #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
+            true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
             uid = self.dataModel.getUidByUser(u)
-            recommendList.append(self.recommend(uid))
+            pre = [self.dataModel.getItemByIid(i) for i in self.recommend(uid)]
+            recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)
-        print 'LFM result:'+ '('+str(self.n) + str(self.factors)+ str(self.learningrate)+str(self.userregular)+str(self.itemregular)+str(self.iter)+')'+str((result)['F1'])
+        print 'LFM result:'+ '('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
 
 
 if __name__ == '__main__':
     nmf = LFM()
-    data = pd.read_csv('../Data/tinytest/format.csv')
+    data = pd.read_csv('../Data/bbg/transaction.csv')
     samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
-    targets = [int(i) for i in data.values[:,3]]
+    targets = [1 for i in samples]
     parameters = {'n':[5]}
 
     clf = grid_search.GridSearchCV(nmf, parameters,cv=5)

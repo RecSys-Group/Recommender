@@ -1,0 +1,10 @@
+ClickÎÄ¼ş×Ö¶ÎË³Ğò£º
+_id, ip, ua, ct, vid, sid, un, url, ref, pid, bpm, point, go,ts, special
+
+
+BrowseÎÄ¼ş×Ö¶ÎË³Ğò£º
+_id, ip, ua, ct, ver, ss, ws, ac, an, pf, lg, tz, fv, url,pid, ref, nld, vid, sid, lv, un, utm_medium, utm_source, utm_content, si, i,sf, so, ps, dt, c, p, utm_term, ck, country, province, city
+
+
+×Ö¶Î·Ö¸ô·ûÎª:
+\001

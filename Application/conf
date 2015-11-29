@@ -7,7 +7,7 @@ test = test.csv
 pop = pop
 
 [algorithms]
-all = TopN|NMF|UserCF|LFM
+all = TopN|NMF|UserCF|LFM|BPR
 
 [TopN]
 n = [5]
@@ -24,5 +24,16 @@ learningrate = [0.001]
 userregular = [0.001]
 itemregular = [0.001]
 iter = [20]
+[BPR]
+n = [5]
+factors = [50]
+learning_rate = [0.001]
+bias_regularization = [0.001]
+user_regularization = [0.001]
+positive_item_regularization = [0.001]
+negative_item_regularization = [0.001]
+iter = [20]
+
+
 
 

@@ -5,6 +5,7 @@ from RecommendationAlg.TopN import TopN
 from RecommendationAlg.NMF import NMF
 from RecommendationAlg.UserCF import UserCF
 from RecommendationAlg.ItemCF import ItemCF
+from RecommendationAlg.BPR import BPR
 
 class AlgFactory:
 
@@ -12,8 +13,6 @@ class AlgFactory:
     def create(name):
         if name == 'TopN':
             return TopN()
-        elif name == 'SVD':
-            return SVD()
         elif name == 'LFM':
             return LFM()
         elif name == 'NMF':
@@ -22,3 +21,5 @@ class AlgFactory:
             return UserCF()
         elif name == 'ItemCF':
             return ItemCF()
+        elif name == 'BPR':
+            return BPR()

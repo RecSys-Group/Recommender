@@ -44,21 +44,22 @@ class TopN(BaseEstimator):
         user_unique = list(set(np.array(testSamples)[:,0]))
         for u in user_unique:
             uTrueIndex = np.argwhere(np.array(testSamples)[:,0] == u)[:,0]
-            true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
-            #true = list(np.array(testSamples)[uTrueIndex][:,1])
+            #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
+            true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-            recommendList.append(self.topN[:self.n])
+            pre = [self.dataModel.getItemByIid(i) for i in self.topN[:self.n]]
+            recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)
-        print 'TopN result:'+'('+str(self.n)+')'+str((result)['F1'])
+        print 'TopN result:'+'('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
 
 
 if __name__ == '__main__':
     tp = TopN()
-    data = pd.read_csv('../Data/tinytest/format.csv')
+    data = pd.read_csv('../Data/bbg/transaction.csv')
     samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
-    targets = [int(i) for i in data.values[:,3]]
+    targets = [1 for i in samples]
     parameters = {'n':[5,10,15,20]}
 
     clf = grid_search.GridSearchCV(tp, parameters,cv=5)

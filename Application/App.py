@@ -1,5 +1,4 @@
 __author__ = 'Jerry'
-
 import pandas as pd
 import Queue
 import threading
@@ -25,9 +24,9 @@ class App:
         self.config = Config()
         self.config.from_ini('../Application/conf')
         self.dataModel = FileDataModelInMatrix(self.config.data)
-        self.data = pd.read_csv('../Data/tinytest/format.csv')
+        self.data = pd.read_csv('../Data/bbg/transaction.csv')
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
-        self.targets = [int(i) for i in self.data.values[:,3]]
+        self.targets = [1 for i in self.samples]
         self.threadLock = threading.Lock()
 
     def mulThread(self,threadParameters):

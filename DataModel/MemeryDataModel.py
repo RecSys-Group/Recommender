@@ -50,8 +50,8 @@ class MemeryDataModel(BaseDataModel):
     def getItemsNum(self):
         return len(self.__items)
 
-    def getItemIDsFromUser(self, userID):
-        return self.__data[userID].indices
+    def getItemIDsFromUid(self, uid):
+        return self.__data[uid].indices
 
     def getItemIDsForEachUser(self):
         itemIDs = []

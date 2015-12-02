@@ -73,4 +73,7 @@ class MemeryDataModel(BaseDataModel):
 
 
 if __name__ == "__main__":
-    pass
+    samples = [[0,0],[1,3],[0,1],[1,2]]
+    targets = [1,2,3,4]
+    p = MemeryDataModel(samples, targets, isRating=True)
+    print p.getItemIDsFromUid(0)

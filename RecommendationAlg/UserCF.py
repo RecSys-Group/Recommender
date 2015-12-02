@@ -22,7 +22,7 @@ class UserCF(BaseEstimator):
         recList = []
         for user_item in testSamples:
             uid = self.dataModel.getUidByUser(user_item[0])
-            recList.append(self.recommend(uid, self.n))
+            recList.append(self.recommend(uid))
         return recList
 
     def fit(self, trainSamples, trainTargets):
@@ -43,7 +43,8 @@ class UserCF(BaseEstimator):
             if itemID in self.dataModel.getItemIDsFromUid(uid):
                 rating += self.simiMatrix[userID][uid] * self.dataModel.getRating(uid, itemID)
         return rating
-    def recommend(self, userID):
+    def recommend(self, u):
+        userID = self.dataModel.getUidByUser(u)
         #interactedItems = self.dataModel.getItemIDsFromUid(userID)
         ratings = dict()
         for uid in self.neighborhood(userID):
@@ -52,7 +53,8 @@ class UserCF(BaseEstimator):
                     #continue
                 r = ratings.get(iid, 0)
                 ratings[iid] = r + self.simiMatrix[userID][uid] * self.dataModel.getRating(uid, iid)
-        return [x for (x, y) in sorted(ratings.items(), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.n]]
+        r = [x for (x, y) in sorted(ratings.items(), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.n]]
+        return [self.dataModel.getItemByIid(i) for i in r]
     def score(self, testSamples, trueLabels):
         print 'User_CF scoring ...'
         trueList = []
@@ -63,8 +65,8 @@ class UserCF(BaseEstimator):
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
             true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-            uid = self.dataModel.getUidByUser(u)
-            pre = [self.dataModel.getItemByIid(i) for i in self.recommend(uid)]
+
+            pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)

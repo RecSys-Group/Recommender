@@ -33,10 +33,13 @@ class TopN(BaseEstimator):
         return recommend_lists
 
     def fit(self, trainSamples, trainTargets):
+        #print len(trainSamples), len(trainTargets)
         self.gen_items_popular(trainSamples, trainTargets)
         self.topN = np.argsort(np.array(self.popItems))[-1::-1]
         return self
 
+    def recommend(self, uid):
+        return [self.dataModel.getItemByIid(i) for i in self.topN[:self.n]]
     def score(self, testSamples, trueLabels):
         trueList = []
         recommendList= []
@@ -57,13 +60,16 @@ class TopN(BaseEstimator):
 
 if __name__ == '__main__':
     tp = TopN()
-    data = pd.read_csv('../Data/bbg/transaction.csv')
+    #data = pd.read_csv('../Data/bbg/transaction.csv')
+    data = pd.read_csv('../Data/tinytest/format.csv')
     samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
-    targets = [1 for i in samples]
-    parameters = {'n':[5,10,15,20]}
+    #targets = [1 for i in samples]
+    targets = [i for i in data.values[:,3]]
+    parameters = {'n':[5]}
 
     clf = grid_search.GridSearchCV(tp, parameters,cv=5)
     clf.fit(samples, targets)
+    clf.predict()
     print(clf.grid_scores_)
 
 

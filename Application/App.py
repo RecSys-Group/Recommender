@@ -17,6 +17,8 @@ from RecommendationAlg.AlgFactory import AlgFactory
 from RecommendationAlg.TopN import TopN
 result = []
 
+
+
 class App:
 
     def __init__(self):
@@ -33,17 +35,17 @@ class App:
         algName = threadParameters[0]
         parameters = threadParameters[1]
         alg = AlgFactory.create(algName)
-        clf = grid_search.GridSearchCV(alg, parameters,cv=5)
+        clf = grid_search.GridSearchCV(alg, parameters,cv=2)
         clf.fit(self.samples, self.targets)
         print(clf.best_estimator_)
         print(clf.grid_scores_)
         self.threadLock.acquire()
         result.append(algName)
-        result.append(clf.best_estimator_)
+        result.append([clf.best_estimator_,clf.best_score_])
         result.append(clf.grid_scores_)
         self.threadLock.release()
 
-    def start(self):
+    def fit(self):
         '''
         for algName in self.config.algList:
             for para in self.config.paras[algName].iter():
@@ -70,7 +72,30 @@ class App:
         t = pd.DataFrame(result)
         t.to_csv('all_result')
 
+    def best_alg(self):
+        print 'recommending ... '
+        self.fit()
+        scores = np.array(result[1::3])[:,1]
+        print scores
+        index = np.argwhere(scores == scores.max())[0][0]
+        best_method = result[3*index]
+        print 'best is: ' + best_method
+        return best_method
+
+    def recommend(self, uids):
+        bestMethod = self.best_alg()
+        alg = AlgFactory.create(bestMethod)
+        alg.fit(self.samples, self.targets)
+        recommendList = []
+        for u in uids:
+            recommendList.append(alg.recommend(u))
+        return recommendList
+
 
 if __name__ == '__main__':
     app = App()
-    app.start()
+    uids = [1]
+    print app.recommend(uids)
+
+
+

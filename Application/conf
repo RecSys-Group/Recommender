@@ -7,7 +7,7 @@ test = test.csv
 pop = pop
 
 [algorithms]
-all = TopN|NMF|UserCF|LFM|BPR
+all = TopN|NMF
 
 [TopN]
 n = [5]
@@ -18,8 +18,8 @@ factors = [50]
 n = [5]
 neighborNum = [5]
 [LFM]
-n = [5]
-factors = [50]
+n = [20]
+factors = [20]
 learningrate = [0.001]
 userregular = [0.001]
 itemregular = [0.001]

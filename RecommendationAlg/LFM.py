@@ -14,7 +14,7 @@ from sklearn import grid_search
 from Eval.Evaluation import *
 
 class LFM(BaseEstimator):
-    def __init__(self, n=5, factors=50, learningrate=0.001, userregular=0.001, itemregular=0.001, iter = 5):
+    def __init__(self, n=5, factors=25, learningrate=0.05, userregular=0.0001, itemregular=0.0001, iter = 10):
         self.factors = factors
         self.n = n
         self.learningrate = learningrate
@@ -49,6 +49,7 @@ class LFM(BaseEstimator):
                 uid = self.dataModel.getUidByUser(row[0])
                 iid = self.dataModel.getIidByItem(row[1])
                 rating = row[2]
+                #rating = 1
                 eui = rating - self.predict_single(uid, iid)
                 rmse_sum += eui**2
                 self.bu[uid] += self.learningrate*(eui-self.userregular*self.bu[uid])
@@ -65,12 +66,13 @@ class LFM(BaseEstimator):
         elif ans < 1:
             return 1
         return ans
-    def recommend(self, uid):
+    def recommend(self, u):
+        uid = self.dataModel.getUidByUser(u)
         predict_scores = []
         for i in range(self.dataModel.getItemsNum()):
             predict_scores.append(self.predict_single(uid, i))
         topN = np.argsort(np.array(predict_scores))[-1:-self.n-1:-1]
-        return topN
+        return [self.dataModel.getItemByIid(i) for i in topN]
     def score(self, testSamples, trueLabels):
         print 'LFM scoring ...'
         trueList = []
@@ -81,8 +83,7 @@ class LFM(BaseEstimator):
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
             true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-            uid = self.dataModel.getUidByUser(u)
-            pre = [self.dataModel.getItemByIid(i) for i in self.recommend(uid)]
+            pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)
@@ -92,9 +93,10 @@ class LFM(BaseEstimator):
 
 if __name__ == '__main__':
     nmf = LFM()
-    data = pd.read_csv('../Data/bbg/transaction.csv')
+    data = pd.read_csv('../Data/tinytest/format.csv')
     samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
-    targets = [1 for i in samples]
+    #targets = [1 for i in samples]
+    targets = [i for i in data.values[:,3]]
     parameters = {'n':[5]}
 
     clf = grid_search.GridSearchCV(nmf, parameters,cv=5)

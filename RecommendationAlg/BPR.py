@@ -16,7 +16,7 @@ from Eval.Evaluation import *
 
 class BPR(BaseEstimator):
     def __init__(self, n=5, factors=50, learning_rate=0.001, bias_regularization=0.001, user_regularization=0.001,
-                 positive_item_regularization=0.001, negative_item_regularization=0.001,iter = 5):
+                 positive_item_regularization=0.001, negative_item_regularization=0.001,iter = 50):
         """initialise BPR matrix factorization model
         D: number of factors
         """
@@ -97,7 +97,7 @@ class BPR(BaseEstimator):
             #print 'starting iteration {0}'.format(it)
             for u, i, j in update_sampler.generate_samples(self.dataModel):
                 self.update_factors(u, i, j)
-            if abs(self.loss() - old_loss) < 0.1 or self.loss() - old_loss > 0:
+            if abs(self.loss() - old_loss) < 0.01 or self.loss() - old_loss > 0:
                 #print 'iteration {0}: loss = {1}'.format(it, self.loss())
                 #print 'converge!!'
                 break
@@ -108,13 +108,14 @@ class BPR(BaseEstimator):
 
     def predict_single(self,uid,iid):
         return self.item_bias[iid] + np.dot(self.user_factors[uid],self.item_factors[iid])
-    def recommend(self, uid):
+    def recommend(self, u):
+        uid = self.dataModel.getUidByUser(u)
         predict_scores = []
         for i in range(self.dataModel.getItemsNum()):
             s = self.predict_single(uid, i)
             predict_scores.append(s)
         topN = np.argsort(np.array(predict_scores))[-1:-self.n - 1:-1]
-        return topN
+        return [self.dataModel.getItemByIid(i) for i in topN]
     def score(self, testSamples, trueLabels):
         print 'BPR scoring ...'
         trueList = []
@@ -125,8 +126,7 @@ class BPR(BaseEstimator):
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
             true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-            uid = self.dataModel.getUidByUser(u)
-            pre = [self.dataModel.getItemByIid(i) for i in self.recommend(uid)]
+            pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)

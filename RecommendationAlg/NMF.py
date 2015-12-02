@@ -35,12 +35,13 @@ class NMF(BaseEstimator):
 
     def predict_single(self, uid, iid):
         return np.dot(self.pu[uid], self.qi[iid])
-    def recommend(self, uid):
+    def recommend(self, u):
+        uid = self.dataModel.getUidByUser(u)
         predict_scores = []
         for i in range(self.dataModel.getItemsNum()):
             predict_scores.append(self.predict_single(uid, i))
         topN = np.argsort(np.array(predict_scores))[-1:-self.n-1:-1]
-        return topN
+        return [self.dataModel.getItemByIid(i) for i in topN]
     def score(self, testSamples, trueLabels):
         print 'NMF scoring ...'
         trueList = []
@@ -51,8 +52,7 @@ class NMF(BaseEstimator):
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
             true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-            uid = self.dataModel.getUidByUser(u)
-            pre = [self.dataModel.getItemByIid(i) for i in self.recommend(uid)]
+            pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
         result = e.evalAll(trueList, recommendList)

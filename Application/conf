@@ -7,7 +7,7 @@ test = test.csv
 pop = pop
 
 [algorithms]
-all = TopN|NMF
+all = TopN|NMF|UserCF|LFM|BPR
 
 [TopN]
 n = [5]

@@ -10,8 +10,9 @@ class MemeryDataModel(BaseDataModel):
         super(MemeryDataModel, self).__init__()
         self.samples = samples
         self.targets = targets
-        self.__users = list(set(np.array(samples)[:,0]))
-        self.__items = list(set(np.array(samples)[:,1]))
+        self.__users = list(set(np.array(self.samples)[:,0]))
+        self.__items = list(set(np.array(self.samples)[:,1]))
+
         ratingMatrix = np.zeros((len(self.__users),len(self.__items)))
 
         l = len(samples)

@@ -65,7 +65,6 @@ class UserCF(BaseEstimator):
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
             true = list(np.array(testSamples)[uTrueIndex][:,1])
             trueList.append(true)
-
             pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()

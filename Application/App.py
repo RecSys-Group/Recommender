@@ -17,15 +17,12 @@ from RecommendationAlg.AlgFactory import AlgFactory
 from RecommendationAlg.TopN import TopN
 result = []
 
-
-
 class App:
 
     def __init__(self):
         print 'begin'
         self.config = Config()
         self.config.from_ini('../Application/conf')
-        self.dataModel = FileDataModelInMatrix(self.config.data)
         self.data = pd.read_csv('../Data/bbg/transaction.csv')
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
         self.targets = [1 for i in self.samples]

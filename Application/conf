@@ -1,11 +1,3 @@
-[data]
-dataset = ..\Data\tinytest
-users = uid.csv
-items = iid.csv
-train = train.csv
-test = test.csv
-pop = pop
-
 [algorithms]
 all = TopN|NMF|UserCF|LFM|BPR
 

@@ -46,8 +46,6 @@ class Config:
         conf.read(config_path)
 
         secs = conf.sections()
-
-        self.data = dict(conf.items('data'))
         self.algList = conf.get('algorithms', 'all').split(splitString)
         for alg in self.algList:
             if alg in secs:

@@ -20,7 +20,7 @@ result = []
 class App:
 
     def __init__(self):
-        print 'begin cx'
+        print 'begin cx cx'
         self.config = Config()
         self.config.from_ini('../Application/conf')
         self.data = pd.read_csv('../Data/bbg/transaction.csv')

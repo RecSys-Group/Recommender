@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/PyRecCx.iml" filepath="$PROJECT_DIR$/.idea/PyRecCx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Recommender.iml" filepath="$PROJECT_DIR$/.idea/Recommender.iml" />
     </modules>
   </component>
 </project>

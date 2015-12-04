@@ -71,10 +71,99 @@ class MemeryDataModel(BaseDataModel):
         return lineData
 
 
+class MemeryDataModelPreprocess():
+
+    def __init__(self):
+        print 'Begin Preprocess!'
+
+    def getLineDataByRemoveDuplicate(self, samples, targets):
+        result = []
+        lineData = [[samples[i][0], samples[i][1], targets[i]] for i in range(len(samples))]
+        for line in lineData:
+            print line
+            if len(result) == 0:
+                result.append(line)
+            else:
+                userItemPairs = [list(i) for i in np.array(result)[:,:2]]
+                if line[:2] not in userItemPairs:
+                    result.append(line)
+        new_samples = [list(i) for i in np.array(result)[:,:2]]
+        new_targets = list(np.array(result)[:,2])
+        return new_samples, new_targets
+
+    def getItemPurchasedNumDistribute(self, samples, targets):
+        result = dict()
+        lineData = [[samples[i][0], samples[i][1], targets[i]] for i in range(len(samples))]
+        for line in lineData:
+            item = line[1]
+            if result.has_key(item):
+                result[item] += 1
+            else:
+                result[item] = 1
+        return result
+
+    def getUserPurchaseNumDistribute(self, samples, targets):
+        result = dict()
+        lineData = [[samples[i][0], samples[i][1], targets[i]] for i in range(len(samples))]
+        for line in lineData:
+            user = line[0]
+            if result.has_key(user):
+                result[user] += 1
+            else:
+                result[user] = 1
+        return result
+
+    def hasLowFrequencyUser(self, samples, targets, n=5):
+        UserF = self.getUserPurchaseNumDistribute(samples, targets)
+        f = UserF.values()
+        for i in f:
+            if i < n:
+                return 1
+        return 0
+
+    def hasLowFrequencyItem(self, samples, targets, n=5):
+        ItemF = self.getItemPurchasedNumDistribute(samples, targets)
+        f = ItemF.values()
+        for i in f:
+            if i < n:
+                return 1
+        return 0
+
+    def removeLowFrequencyUser(self, samples, targets, n=5):
+        print 'low'
+        UserF = self.getUserPurchaseNumDistribute(samples, targets)
+        result = []
+        lineData = [[samples[i][0], samples[i][1], targets[i]] for i in range(len(samples))]
+        for line in lineData:
+            user = line[0]
+            if UserF[user] > n:
+                result.append(line)
+        new_samples = [list(i) for i in np.array(result)[:,:2]]
+        new_targets = list(np.array(result)[:,2])
+        return new_samples, new_targets
+
+    def removeLowFrequencyItem(self, samples, targets, n=5):
+        print 'low'
+        ItemF = self.getItemPurchasedNumDistribute(samples, targets)
+        result = []
+        lineData = [[samples[i][0], samples[i][1], targets[i]] for i in range(len(samples))]
+        for line in lineData:
+            item = line[1]
+            if ItemF[item] > n:
+                result.append(line)
+        new_samples = [list(i) for i in np.array(result)[:,:2]]
+        new_targets = list(np.array(result)[:,2])
+        return new_samples, new_targets
 
 
-if __name__ == "__main__":
-    samples = [[0,0],[1,3],[0,1],[1,2]]
-    targets = [1,2,3,4]
-    p = MemeryDataModel(samples, targets, isRating=True)
-    print p.getItemIDsFromUid(0)
+
+if __name__  ==  "__main__":
+    data = pd.read_csv('../Data/bbg/transaction.csv')
+    samples = [[int(i[0]), int(i[1])] for i in data.values[:, 0:2]]
+    targets = [1 for i in samples]
+    p = MemeryDataModelPreprocess()
+    samples, targets = p.getLineDataByRemoveDuplicate(samples, targets)
+    print samples, targets
+    samples, targets = p.removeLowFrequencyItem(samples, targets,5)
+    print samples, targets
+    samples, targets = p.removeLowFrequencyUser(samples, targets,5)

@@ -1,5 +1,6 @@
 __author__ = 'Jerry'
 import pandas as pd
+import numpy as np
 import Queue
 import threading
 import datetime

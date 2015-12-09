@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Recommender.iml" filepath="$PROJECT_DIR$/.idea/Recommender.iml" />
+      <module fileurl="file://D:/ReviewMiner/.idea/ReviewMiner.iml" filepath="D:/ReviewMiner/.idea/ReviewMiner.iml" />
     </modules>
   </component>
 </project>

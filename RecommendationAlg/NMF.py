@@ -29,7 +29,7 @@ class NMF(BaseEstimator):
     def fit(self, trainSamples, trainTargets):
         self.dataModel = MemeryDataModel(trainSamples, trainTargets)
         V = self.dataModel.getData()
-        model = ProjectedGradientNMF(n_components=self.factors, max_iter=100, nls_max_iter=100)
+        model = ProjectedGradientNMF(n_components=self.factors, max_iter=1000, nls_max_iter=1000)
         self.pu = model.fit_transform(V)
         self.qi = model.fit(V).components_.transpose()
 

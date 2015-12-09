@@ -2,7 +2,7 @@ __author__ = 'Jerry'
 import pandas as pd
 import numpy as np
 import Queue
-import threading
+import multiprocessing
 import datetime
 
 from sklearn.base import BaseEstimator
@@ -21,27 +21,26 @@ result = []
 class App:
 
     def __init__(self):
-        print 'begincxcx'
         self.config = Config()
         self.config.from_ini('../Application/conf')
         self.data = pd.read_csv('../Data/bbg/transaction.csv')
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
         self.targets = [1 for i in self.samples]
-        self.threadLock = threading.Lock()
+        self.Lock = multiprocessing.Lock()
 
-    def mulThread(self,threadParameters):
-        algName = threadParameters[0]
-        parameters = threadParameters[1]
+    def mulProcess(self,processParameters):
+        algName = processParameters[0]
+        parameters = processParameters[1]
         alg = AlgFactory.create(algName)
         clf = grid_search.GridSearchCV(alg, parameters,cv=2)
         clf.fit(self.samples, self.targets)
         print(clf.best_estimator_)
         print(clf.grid_scores_)
-        self.threadLock.acquire()
+        self.Lock.acquire()
         result.append(algName)
         result.append([clf.best_estimator_,clf.best_score_])
         result.append(clf.grid_scores_)
-        self.threadLock.release()
+        self.Lock.release()
 
     def fit(self):
         '''
@@ -53,25 +52,24 @@ class App:
                 print algName + 'time consuming:' + str(datetime.datetime.now()-s1)
                 raw_input()
         '''
-
-        print 'mul'
-        thread_que = []
+        print 'Fitting begin'
+        process_que = []
         s = datetime.datetime.now()
         for algName in self.config.algList:
             for para in self.config.paras[algName].iter():
-                threadParameters = [algName, para]
-                thread = threading.Thread(target=self.mulThread, args=(threadParameters,))
-                thread_que.append(thread)
-        for t in thread_que:
+                Parameters = [algName, para]
+                process = multiprocessing.Process(target=self.mulProcess, args=(Parameters,))
+                process_que.append(process)
+        for t in process_que:
             t.start()
-        for t in thread_que:
+        for t in process_que:
             t.join()
         print 'time consuming:' + str(datetime.datetime.now()-s)
         t = pd.DataFrame(result)
         t.to_csv('all_result')
 
     def best_alg(self):
-        print 'recommending ... '
+        print 'Selecting best Alg'
         self.fit()
         scores = np.array(result[1::3])[:,1]
         print scores
@@ -81,6 +79,7 @@ class App:
         return best_method
 
     def recommend(self, uids):
+        print 'Recommending'
         bestMethod = self.best_alg()
         alg = AlgFactory.create(bestMethod)
         alg.fit(self.samples, self.targets)
@@ -92,8 +91,11 @@ class App:
 
 if __name__ == '__main__':
     app = App()
+    '''
     uids = [1]
     print app.recommend(uids)
+    '''
+    app.fit()
 
 
 

@@ -1,9 +1,0 @@
-users,D:\Desktop\recommender\Data\tinytest\uid.csv
-items,D:\Desktop\recommender\Data\tinytest\iid.csv
-train,D:\Desktop\recommender\Data\tinytest\train.csv
-test,D:\Desktop\recommender\Data\tinytest\test.csv
-pop,D:\Desktop\recommender\Data\tinytest\pop
-initpu,D:\Desktop\recommender\Data\tinytest\pu
-initqi,D:\Desktop\recommender\Data\tinytest\qi
-
-

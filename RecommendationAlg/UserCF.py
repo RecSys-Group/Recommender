@@ -47,7 +47,6 @@ class UserCF(BaseEstimator):
         return rating
     def recommend(self, u):
         userID = self.dataModel.getUidByUser(u)
-        print userID
         if userID == -1:
             print 'not in test'
             return []

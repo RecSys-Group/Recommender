@@ -68,11 +68,15 @@ class LFM(BaseEstimator):
         return ans
     def recommend(self, u):
         uid = self.dataModel.getUidByUser(u)
-        predict_scores = []
-        for i in range(self.dataModel.getItemsNum()):
-            predict_scores.append(self.predict_single(uid, i))
-        topN = np.argsort(np.array(predict_scores))[-1:-self.n-1:-1]
-        return [self.dataModel.getItemByIid(i) for i in topN]
+        if uid == -1:
+            print 'not in test'
+            return []
+        else:
+            predict_scores = []
+            for i in range(self.dataModel.getItemsNum()):
+                predict_scores.append(self.predict_single(uid, i))
+            topN = np.argsort(np.array(predict_scores))[-1:-self.n-1:-1]
+            return [self.dataModel.getItemByIid(i) for i in topN]
     def score(self, testSamples, trueLabels):
         print 'LFM scoring ...'
         trueList = []
@@ -86,7 +90,7 @@ class LFM(BaseEstimator):
             pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
-        result = e.evalAll(trueList, recommendList)
+        result = e.evalAll(recommendList, trueList)
         print 'LFM result:'+ '('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
 

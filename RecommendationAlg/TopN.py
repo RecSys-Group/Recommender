@@ -7,6 +7,7 @@ from sklearn import metrics
 from DataModel.MemeryDataModel import *
 from Eval.Evaluation import *
 from sklearn import grid_search
+from sklearn.cross_validation import StratifiedKFold
 
 class TopN(BaseEstimator):
 
@@ -33,6 +34,7 @@ class TopN(BaseEstimator):
         return recommend_lists
 
     def fit(self, trainSamples, trainTargets):
+        #print trainSamples, trainTargets
         #print len(trainSamples), len(trainTargets)
         self.gen_items_popular(trainSamples, trainTargets)
         self.topN = np.argsort(np.array(self.popItems))[-1::-1]
@@ -41,6 +43,8 @@ class TopN(BaseEstimator):
     def recommend(self, uid):
         return [self.dataModel.getItemByIid(i) for i in self.topN[:self.n]]
     def score(self, testSamples, trueLabels):
+        #print testSamples
+        #print len(testSamples)
         trueList = []
         recommendList= []
 
@@ -53,7 +57,7 @@ class TopN(BaseEstimator):
             pre = [self.dataModel.getItemByIid(i) for i in self.topN[:self.n]]
             recommendList.append(pre)
         e = Eval()
-        result = e.evalAll(trueList, recommendList)
+        result = e.evalAll(recommendList, trueList)
         print 'TopN result:'+'('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
 
@@ -67,9 +71,13 @@ if __name__ == '__main__':
     targets = [i for i in data.values[:,3]]
     parameters = {'n':[5]}
 
-    clf = grid_search.GridSearchCV(tp, parameters,cv=5)
+    labels = [int(i[0]) for i in data.values[:,0:2]]
+
+    rec_cv =  StratifiedKFold(labels, 5)
+
+    clf = grid_search.GridSearchCV(tp, parameters,cv=rec_cv)
+
     clf.fit(samples, targets)
-    clf.predict()
     print(clf.grid_scores_)
 
 

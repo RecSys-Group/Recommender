@@ -9,6 +9,7 @@ from sklearn.base import BaseEstimator
 from sklearn import cross_validation
 from sklearn import metrics
 from sklearn import grid_search
+from sklearn.cross_validation import StratifiedKFold
 from Eval.Evaluation import *
 
 class UserCF(BaseEstimator):
@@ -26,6 +27,7 @@ class UserCF(BaseEstimator):
         return recList
 
     def fit(self, trainSamples, trainTargets):
+        #print len(trainSamples)
         self.dataModel = MemeryDataModel(trainSamples, trainTargets)
         usersNum = self.dataModel.getUsersNum()
         self.simiMatrix = np.zeros((usersNum, usersNum))
@@ -45,18 +47,24 @@ class UserCF(BaseEstimator):
         return rating
     def recommend(self, u):
         userID = self.dataModel.getUidByUser(u)
-        #interactedItems = self.dataModel.getItemIDsFromUid(userID)
-        ratings = dict()
-        for uid in self.neighborhood(userID):
-            for iid in self.dataModel.getItemIDsFromUid(uid):
-                #if iid in interactedItems:
-                    #continue
-                r = ratings.get(iid, 0)
-                ratings[iid] = r + self.simiMatrix[userID][uid] * self.dataModel.getRating(uid, iid)
-        r = [x for (x, y) in sorted(ratings.items(), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.n]]
-        return [self.dataModel.getItemByIid(i) for i in r]
+        print userID
+        if userID == -1:
+            print 'not in test'
+            return []
+        else:
+            #interactedItems = self.dataModel.getItemIDsFromUid(userID)
+            ratings = dict()
+            for uid in self.neighborhood(userID):
+                for iid in self.dataModel.getItemIDsFromUid(uid):
+                    #if iid in interactedItems:
+                        #continue
+                    r = ratings.get(iid, 0)
+                    ratings[iid] = r + self.simiMatrix[userID][uid] * self.dataModel.getRating(uid, iid)
+            r = [x for (x, y) in sorted(ratings.items(), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.n]]
+            return [self.dataModel.getItemByIid(i) for i in r]
     def score(self, testSamples, trueLabels):
         print 'User_CF scoring ...'
+        #print len(testSamples)
         trueList = []
         recommendList= []
         user_unique = list(set(np.array(testSamples)[:,0]))
@@ -68,10 +76,9 @@ class UserCF(BaseEstimator):
             pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
-        result = e.evalAll(trueList, recommendList)
+        result = e.evalAll(recommendList, trueList)
         print 'UserCF result:'+'('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
-
 
 
 if __name__ == '__main__':
@@ -80,7 +87,8 @@ if __name__ == '__main__':
     samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
     targets = [1 for i in samples]
     parameters = {'n':[5], 'neighbornum':[5]}
-
-    clf = grid_search.GridSearchCV(nmf, parameters,cv=5)
+    labels = [int(i[0]) for i in data.values[:,0:2]]
+    rec_cv =  StratifiedKFold(labels, 5)
+    clf = grid_search.GridSearchCV(nmf, parameters,cv=rec_cv)
     clf.fit(samples, targets)
     print(clf.grid_scores_)

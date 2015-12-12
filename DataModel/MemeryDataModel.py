@@ -162,8 +162,4 @@ if __name__  ==  "__main__":
     samples = [[int(i[0]), int(i[1])] for i in data.values[:, 0:2]]
     targets = [1 for i in samples]
     p = MemeryDataModelPreprocess()
-    samples, targets = p.getLineDataByRemoveDuplicate(samples, targets)
-    print samples, targets
-    samples, targets = p.removeLowFrequencyItem(samples, targets,5)
-    print samples, targets
-    samples, targets = p.removeLowFrequencyUser(samples, targets,5)
+    print p.hasLowFrequencyUser(samples, targets, 5)

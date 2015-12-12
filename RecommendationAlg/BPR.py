@@ -110,12 +110,16 @@ class BPR(BaseEstimator):
         return self.item_bias[iid] + np.dot(self.user_factors[uid],self.item_factors[iid])
     def recommend(self, u):
         uid = self.dataModel.getUidByUser(u)
-        predict_scores = []
-        for i in range(self.dataModel.getItemsNum()):
-            s = self.predict_single(uid, i)
-            predict_scores.append(s)
-        topN = np.argsort(np.array(predict_scores))[-1:-self.n - 1:-1]
-        return [self.dataModel.getItemByIid(i) for i in topN]
+        if uid == -1:
+            print 'not in test'
+            return []
+        else:
+            predict_scores = []
+            for i in range(self.dataModel.getItemsNum()):
+                s = self.predict_single(uid, i)
+                predict_scores.append(s)
+            topN = np.argsort(np.array(predict_scores))[-1:-self.n - 1:-1]
+            return [self.dataModel.getItemByIid(i) for i in topN]
     def score(self, testSamples, trueLabels):
         print 'BPR scoring ...'
         trueList = []
@@ -129,7 +133,7 @@ class BPR(BaseEstimator):
             pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
-        result = e.evalAll(trueList, recommendList)
+        result = e.evalAll(recommendList, trueList)
         print 'BPR result:'+ '('+str(self.get_params())+')'+str((result)['F1'])
         return (result)['F1']
 

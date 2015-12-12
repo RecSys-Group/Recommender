@@ -16,6 +16,7 @@ from utils.Similarity import *
 import utils.MulThreading as Mul
 from RecommendationAlg.AlgFactory import AlgFactory
 from RecommendationAlg.TopN import TopN
+from sklearn.cross_validation import StratifiedKFold
 result = []
 
 class App:
@@ -26,13 +27,16 @@ class App:
         self.data = pd.read_csv('../Data/bbg/transaction.csv')
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
         self.targets = [1 for i in self.samples]
+        self.labels = [int(i[0]) for i in self.data.values[:,0:2]]
         self.Lock = multiprocessing.Lock()
 
     def mulProcess(self,processParameters):
         algName = processParameters[0]
         parameters = processParameters[1]
         alg = AlgFactory.create(algName)
-        clf = grid_search.GridSearchCV(alg, parameters,cv=2)
+
+        rec_cv =  StratifiedKFold(self.labels, 5)
+        clf = grid_search.GridSearchCV(alg, parameters,cv=rec_cv)
         clf.fit(self.samples, self.targets)
         print(clf.best_estimator_)
         print(clf.grid_scores_)

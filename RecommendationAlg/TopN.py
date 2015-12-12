@@ -12,6 +12,7 @@ from sklearn.cross_validation import StratifiedKFold
 class TopN(BaseEstimator):
 
     def __init__(self, n=5):
+        print 'topN begin'
         self.n = n
 
     def gen_items_popular(self, trainSamples, trainTargets, hasTimes=False):

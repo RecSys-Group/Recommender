@@ -15,6 +15,7 @@ from Eval.Evaluation import *
 
 class LFM(BaseEstimator):
     def __init__(self, n=5, factors=25, learningrate=0.05, userregular=0.0001, itemregular=0.0001, iter = 10):
+        print 'lfm begin'
         self.factors = factors
         self.n = n
         self.learningrate = learningrate

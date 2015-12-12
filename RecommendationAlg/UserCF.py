@@ -15,6 +15,7 @@ from Eval.Evaluation import *
 class UserCF(BaseEstimator):
 
     def __init__(self, neighbornum=5, n=5):
+        print 'ucf begin'
         self.neighbornum = neighbornum
         self.similarity = Similarity('COSINE')
         self.n = n

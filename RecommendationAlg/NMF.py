@@ -15,6 +15,7 @@ from Eval.Evaluation import *
 
 class NMF(BaseEstimator):
     def __init__(self, n=5, factors=50):
+        print 'nmf begin'
         self.n = n
         self.factors = factors
 

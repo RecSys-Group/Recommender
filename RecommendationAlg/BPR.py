@@ -20,6 +20,7 @@ class BPR(BaseEstimator):
         """initialise BPR matrix factorization model
         D: number of factors
         """
+        print 'bpr begin'
         self.n = n
         self.factors = factors
         self.learning_rate = learning_rate

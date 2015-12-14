@@ -1,5 +1,5 @@
 [algorithms]
-all = TopN|NMF|UserCF|LFM|BPR
+all = ItemCF
 
 [TopN]
 n = [5]
@@ -26,6 +26,8 @@ positive_item_regularization = [0.001]
 negative_item_regularization = [0.001]
 iter = [20]
 
-
+[ItemCF]
+n = [5]
+neighborNum = [5]
 
 

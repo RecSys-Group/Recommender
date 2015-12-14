@@ -12,8 +12,7 @@ class MemeryDataModel(BaseDataModel):
         self.targets = targets
         self.__users = list(set(np.array(self.samples)[:,0]))
         self.__items = list(set(np.array(self.samples)[:,1]))
-
-        ratingMatrix = np.zeros((len(self.__users),len(self.__items)))
+        self.ratingMatrix = np.zeros((len(self.__users),len(self.__items)))
 
         l = len(samples)
         for i in range(l):
@@ -22,8 +21,9 @@ class MemeryDataModel(BaseDataModel):
             item = int(float(samples[i][1]))
             iid = self.getIidByItem(item)
             rating = float(targets[i]) if isRating else 1
-            ratingMatrix[uid][iid] = rating
-        self.__data = spr.csr_matrix(ratingMatrix)
+            self.ratingMatrix[uid][iid] = rating
+        self.__data = spr.csr_matrix(self.ratingMatrix)
+        self.__data_T = spr.csr_matrix(self.ratingMatrix.transpose())
 
     def getUidByUser(self, user):
         if user not in self.__users:
@@ -53,6 +53,9 @@ class MemeryDataModel(BaseDataModel):
 
     def getItemIDsFromUid(self, uid):
         return self.__data[uid].indices
+
+    def getUserIDsFromIid(self, iid):
+        return self.__data_T[iid].indices
 
     def getItemIDsForEachUser(self):
         itemIDs = []

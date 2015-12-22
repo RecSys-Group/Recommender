@@ -35,7 +35,10 @@ class Eval:
                 p_t = 0
             else:
                 p_t = co_length[i] / re_length[i]
-            r_t = co_length[i] / pu_length[i]
+            if pu_length[i] == 0:
+                r_t = 0
+            else:
+                r_t = co_length[i] / pu_length[i]
             p.append(p_t)
             r.append(r_t)
             if p_t != 0 or r_t != 0:

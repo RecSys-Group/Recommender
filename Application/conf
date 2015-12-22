@@ -1,5 +1,5 @@
 [algorithms]
-all = ItemCF
+all = TopN|NMF|UserCF|LFM|BPR|ItemCF
 
 [TopN]
 n = [5]

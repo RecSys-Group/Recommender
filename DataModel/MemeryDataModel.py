@@ -6,7 +6,7 @@ from BaseDataModel import BaseDataModel
 
 class MemeryDataModel(BaseDataModel):
 
-    def __init__(self, samples, targets, isRating=True):
+    def __init__(self, samples, targets, isRating=True, hasTimes=False):
         super(MemeryDataModel, self).__init__()
         self.samples = samples
         self.targets = targets
@@ -20,7 +20,12 @@ class MemeryDataModel(BaseDataModel):
             uid = self.getUidByUser(user)
             item = int(float(samples[i][1]))
             iid = self.getIidByItem(item)
-            rating = float(targets[i]) if isRating else 1
+            if isRating:
+                rating = float(targets[i])
+            elif hasTimes:
+                rating += 1
+            else:
+                rating = 1
             self.ratingMatrix[uid][iid] = rating
         self.__data = spr.csr_matrix(self.ratingMatrix)
         self.__data_T = spr.csr_matrix(self.ratingMatrix.transpose())

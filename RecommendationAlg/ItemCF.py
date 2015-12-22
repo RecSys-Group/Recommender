@@ -46,11 +46,12 @@ class ItemCF(BaseEstimator):
         return rating
 
     def recommend(self, u):
+        userID = self.dataModel.getUidByUser(u)
         if userID == -1:
             print 'not in test'
             return []
         else:
-            userID = self.dataModel.getUidByUser(u)
+
             #interactedItems = self.dataModel.getItemIDsFromUid(userID)
             ratings = dict()
             for iid in self.dataModel.getItemIDsFromUid(userID):

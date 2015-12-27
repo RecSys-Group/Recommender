@@ -6,6 +6,7 @@ from RecommendationAlg.NMF import NMF
 from RecommendationAlg.UserCF import UserCF
 from RecommendationAlg.ItemCF import ItemCF
 from RecommendationAlg.BPR import BPR
+from RecommendationAlg.VSRank import VSRank
 
 class AlgFactory:
 
@@ -23,3 +24,5 @@ class AlgFactory:
             return ItemCF()
         elif name == 'BPR':
             return BPR()
+        elif name == 'VSRank':
+            return VSRank()

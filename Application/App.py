@@ -23,10 +23,12 @@ class App:
     def __init__(self):
         self.config = Config()
         self.config.from_ini('../Application/conf')
-        self.data = pd.read_csv('../Data/bbg/transaction.csv')
+        self.data = pd.read_csv('../Data/ml-1m/newtransaction.csv')
+        # self.data = pd.read_csv('../Data/bbg/transaction.csv')
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
-        self.targets = [1 for i in self.samples]
         self.labels = [int(i[0]) for i in self.data.values[:,0:2]]
+        self.targets = [int(i[2]) for i in self.data.values]
+        # self.targets = [1 for i in self.samples]
         self.Lock = Lock()
         m = Manager()
         self.result = m.list()
@@ -101,8 +103,7 @@ if __name__ == '__main__':
     uids = [1]
     print app.recommend(uids)
     '''
+    # result = app.recommend(range(1729))
+    # t = pd.DataFrame(result)
+    # t.to_csv('rec_list')
     app.fit()
-
-
-
-

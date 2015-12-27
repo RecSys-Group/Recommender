@@ -21,12 +21,11 @@ class MemeryDataModel(BaseDataModel):
             item = int(float(samples[i][1]))
             iid = self.getIidByItem(item)
             if isRating:
-                rating = float(targets[i])
+                self.ratingMatrix[uid][iid] = float(targets[i])
             elif hasTimes:
-                rating += 1
+                self.ratingMatrix[uid][iid] += 1
             else:
-                rating = 1
-            self.ratingMatrix[uid][iid] = rating
+                self.ratingMatrix[uid][iid] = 1
         self.__data = spr.csr_matrix(self.ratingMatrix)
         self.__data_T = spr.csr_matrix(self.ratingMatrix.transpose())
 

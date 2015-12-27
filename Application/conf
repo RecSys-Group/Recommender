@@ -1,5 +1,5 @@
 [algorithms]
-all = TopN|NMF|UserCF|LFM|BPR|ItemCF
+all = VSRank
 
 [TopN]
 n = [5]
@@ -30,4 +30,10 @@ iter = [20]
 n = [5]
 neighborNum = [5]
 
+[VSRank]
+n = [5]
+neighborNum = [5]
 
+[VSRank+]
+n = [5]
+neighborNum = [5]

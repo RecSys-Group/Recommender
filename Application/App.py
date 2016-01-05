@@ -2,7 +2,8 @@ __author__ = 'Jerry'
 import pandas as pd
 import numpy as np
 import Queue
-import multiprocessing
+
+from multiprocessing import Process, Manager, freeze_support, Lock
 import datetime
 
 from sklearn.base import BaseEstimator
@@ -17,10 +18,8 @@ import utils.MulThreading as Mul
 from RecommendationAlg.AlgFactory import AlgFactory
 from RecommendationAlg.TopN import TopN
 from sklearn.cross_validation import StratifiedKFold
-result = []
 
 class App:
-
     def __init__(self):
         self.config = Config()
         self.config.from_ini('../Application/conf')
@@ -28,15 +27,17 @@ class App:
         self.samples = [[int(i[0]), int(i[1])] for i in self.data.values[:,0:2]]
         self.targets = [1 for i in self.samples]
         self.labels = [int(i[0]) for i in self.data.values[:,0:2]]
-        self.Lock = multiprocessing.Lock()
+        self.Lock = Lock()
+        m = Manager()
+        self.result = m.list()
 
-    def mulProcess(self,processParameters):
+    def mulProcess(self,result,processParameters):
         algName = processParameters[0]
         parameters = processParameters[1]
         alg = AlgFactory.create(algName)
 
-        rec_cv =  StratifiedKFold(self.labels, 5)
-        clf = grid_search.GridSearchCV(alg, parameters,cv=rec_cv)
+        rec_cv =  StratifiedKFold(self.labels, 2)
+        clf = grid_search.GridSearchCV(alg, parameters, cv=rec_cv)
         clf.fit(self.samples, self.targets)
         print(clf.best_estimator_)
         print(clf.grid_scores_)
@@ -62,23 +63,23 @@ class App:
         for algName in self.config.algList:
             for para in self.config.paras[algName].iter():
                 Parameters = [algName, para]
-                process = multiprocessing.Process(target=self.mulProcess, args=(Parameters,))
+                process = Process(target=self.mulProcess, args=(self.result,Parameters))
                 process_que.append(process)
         for t in process_que:
             t.start()
         for t in process_que:
             t.join()
         print 'time consuming:' + str(datetime.datetime.now()-s)
-        t = pd.DataFrame(result)
+        t = pd.DataFrame(list(self.result))
         t.to_csv('all_result')
 
     def best_alg(self):
         print 'Selecting best Alg'
         self.fit()
-        scores = np.array(result[1::3])[:,1]
+        scores = np.array(self.result[1:3])[:,1]
         print scores
         index = np.argwhere(scores == scores.max())[0][0]
-        best_method = result[3*index]
+        best_method = self.result[3*index]
         print 'best is: ' + best_method
         return best_method
 
@@ -94,12 +95,14 @@ class App:
 
 
 if __name__ == '__main__':
+
     app = App()
     '''
     uids = [1]
     print app.recommend(uids)
     '''
     app.fit()
+
 
 
 

@@ -1,17 +1,30 @@
-import numpy as np
-from sklearn import cross_validation
-from sklearn import datasets
-from sklearn import svm
-from sklearn.cross_validation import StratifiedKFold
-import pandas as pd
+from multiprocessing import Process, Manager, freeze_support
+import os
 
-data = pd.read_csv('Data/bbg/transaction.csv')
-samples = [[int(i[0]), int(i[1])] for i in data.values[:,0:2]]
-targets = [1 for i in samples]
-parameters = {'n':[5], 'neighbornum':[5]}
-labels = [int(i[0]) for i in data.values[:,0:2]]
-rec_cv =  StratifiedKFold(labels, 5)
-for line in rec_cv:
-    print line[0][:25], line[1][:10]
-    print len(line[0]), len(line[1])
-    raw_input()
+
+
+def testFunc(vip_list, cc):
+    vip_list.append(cc)
+    print 'process id:', os.getpid()
+
+if __name__ == '__main__':
+    #freeze_support()
+    manager = Manager()
+    vip_list = manager.list()
+    #freeze_support()
+    threads = []
+
+    for ll in range(10):
+        t = Process(target=testFunc, args=(vip_list,ll))
+        t.daemon = True
+        threads.append(t)
+
+    for i in range(len(threads)):
+        threads[i].start()
+
+    for j in range(len(threads)):
+        threads[j].join()
+
+    print "------------------------"
+    print 'process id:', os.getpid()
+    print vip_list

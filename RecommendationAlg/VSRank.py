@@ -136,8 +136,9 @@ class VSRank(BaseEstimator):
     def recommend_pairwise(self, userID):
         itemsNum = self.dataModel.getItemsNum()
         N = itemsNum
+        recNum = self.n
         pi = [0]*itemsNum
-        rank = [0]*itemsNum
+        rank = []
         for i in range(itemsNum):
             sum1 = 0
             sum2 = 0
@@ -148,15 +149,17 @@ class VSRank(BaseEstimator):
                     sum2 -= p
             pi[i] = sum1 - sum2
         I = set(i for i in range(itemsNum))
-        while len(I) > 0:
+        while recNum > 0:
+        # while len(I) > 0:
+            recNum -= 1
             t = np.argmax(pi)
-            rank[t] = N - len(I)
+            rank.append(t)
             I.remove(t)
             pi[t] = None
             for i in I:
                 pi[i] += self.preference(userID, t, i) - self.preference(userID, i, t)
-        r = [x for (x, y) in sorted(zip(range(itemsNum), rank), lambda a, b: cmp(a[1], b[1]))[:self.n]]
-        return [self.dataModel.getItemByIid(i) for i in r]
+        # r = [x for (x, y) in sorted(zip(range(itemsNum), rank), lambda a, b: cmp(a[1], b[1]))[:self.n]]
+        return [self.dataModel.getItemByIid(i) for i in rank]
 
     def preference(self, uid, i1, i2):
         nerghborhood = []
@@ -212,14 +215,16 @@ class VSRank(BaseEstimator):
         for u in user_unique:
             uTrueIndex = np.argwhere(np.array(testSamples)[:,0] == u)[:,0]
             #true = [self.dataModel.getIidByItem(i) for i in list(np.array(testSamples)[uTrueIndex][:,1])]
-            true = list(np.array(testSamples)[uTrueIndex][:,1])
+            uTrueItem = list(np.array(testSamples)[uTrueIndex][:,1])
+            uTrueRating = list(np.array(trueLabels)[uTrueIndex])
+            true = [x for (x, y) in sorted(zip(uTrueItem, uTrueRating), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.n]]
             trueList.append(true)
             pre = self.recommend(u)
             recommendList.append(pre)
         e = Eval()
         result = e.evalAll(recommendList, trueList)
 
-        print 'vsrank result:'+'('+str(self.get_params())+')'+str((result)['F1'])
+        print 'vsrank result:'+'('+str(self.get_params())+')'+str(result)
         return (result)['F1']
 
 if __name__ == '__main__':

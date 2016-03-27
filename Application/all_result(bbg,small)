@@ -1,0 +1,25 @@
+,0
+0,TopN
+1,"[TopN(n=5), 0.089335947433316618]"
+2,"[mean: 0.08934, std: 0.01786, params: {'n': 5}]"
+3,VSRankPlus
+4,"[VSRankPlus(n=5, neighbornum=5), 0.11158202396625724]"
+5,"[mean: 0.11158, std: 0.00617, params: {'neighbornum': 5, 'n': 5}]"
+3,ItemCF
+4,"[ItemCF(n=5, neighbornum=5), 0.35285587791226602]"
+5,"[mean: 0.35286, std: 0.00852, params: {'neighbornum': 5, 'n': 5}]"
+6,UserCF
+7,"[UserCF(n=5, neighbornum=5), 0.15778367847768587]"
+8,"[mean: 0.15778, std: 0.01127, params: {'neighbornum': 5, 'n': 5}]"
+9,NMF
+10,"[NMF(factors=50, n=5), 0.13957472273056776]"
+11,"[mean: 0.13957, std: 0.00334, params: {'n': 5, 'factors': 50}]"
+12,LFM
+13,"[LFM(factors=20, itemregular=0.001, iter=20, learningrate=0.000234238873663,
+  n=20, userregular=0.001), 0.016529199800959852]"
+14,"[mean: 0.01653, std: 0.00106, params: {'factors': 20, 'iter': 20, 'n': 20, 'learningrate': 0.001, 'itemregular': 0.001, 'userregular': 0.001}]"
+0,BPR
+1,"[BPR(bias_regularization=0.001, factors=50, iter=20,
+  learning_rate=0.000121576654591, n=5, negative_item_regularization=0.001,
+  positive_item_regularization=0.001, user_regularization=0.001), 0.092470456809062324]"
+2,"[mean: 0.09247, std: 0.01229, params: {'negative_item_regularization': 0.001, 'user_regularization': 0.001, 'bias_regularization': 0.001, 'factors': 50, 'learning_rate': 0.001, 'iter': 20, 'n': 5, 'positive_item_regularization': 0.001}]"

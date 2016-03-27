@@ -6,7 +6,7 @@ from BaseDataModel import BaseDataModel
 
 class MemeryDataModel(BaseDataModel):
 
-    def __init__(self, samples, targets, isRating=True, hasTimes=False):
+    def __init__(self, samples, targets, isRating=False, hasTimes=False):
         super(MemeryDataModel, self).__init__()
         self.samples = samples
         self.targets = targets

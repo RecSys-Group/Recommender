@@ -76,4 +76,8 @@ class Eval:
         return {'F1': self.f1, 'NDCG': self.NDCG}
 
 
-
+if '__main__' == __name__:
+    e = Eval()
+    rec = [[1, 2, 3]]
+    pur = [[2, 3, 4]]
+    e.NDGG_k(rec, pur)

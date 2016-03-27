@@ -1,5 +1,5 @@
 [algorithms]
-all = VSRank
+all = VSRankPlus
 
 [TopN]
 n = [5]
@@ -34,6 +34,6 @@ neighborNum = [5]
 n = [5]
 neighborNum = [5]
 
-[VSRank+]
+[VSRankPlus]
 n = [5]
 neighborNum = [5]

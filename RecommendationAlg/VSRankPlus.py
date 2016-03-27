@@ -11,14 +11,16 @@ from sklearn import metrics
 from sklearn import grid_search
 from sklearn.cross_validation import StratifiedKFold
 from Eval.Evaluation import *
+import random
 
-class VSRank(BaseEstimator):
+class VSRankPlus(BaseEstimator):
 
     def __init__(self, neighbornum=5, n=5):
         print 'vsrank begin'
         self.neighbornum = neighbornum
         self.similarity = Similarity('COSINE')
         self.n = n
+        self.sample_rate = 5
 
     def predict(self,testSamples):
         recList = []
@@ -28,20 +30,31 @@ class VSRank(BaseEstimator):
         return recList
 
     def fit(self, trainSamples, trainTargets):
+        self.dataModel = MemeryDataModel(trainSamples, trainTargets, hasTimes=True)
         usersNum = self.dataModel.getUsersNum()
         itemsNum = self.dataModel.getItemsNum()
+        all_item_set = set(range(itemsNum))
 
-        self.dataModel = MemeryDataModel(trainSamples, trainTargets, isRating=False, hasTimes=True)
         self.T = [{} for i in range(usersNum)]
         for uid in range(usersNum):
             purchased_items = self.dataModel.getItemIDsFromUid(uid)
             for i in range(len(purchased_items)):
                 for j in range(i+1, len(purchased_items)):
-                    if self.dataModel.getRating(uid, i) > self.dataModel.getRating(uid, j):
+                    rating_i = self.dataModel.getRating(uid, purchased_items[i])
+                    rating_j = self.dataModel.getRating(uid, purchased_items[j])
+                    if rating_i > rating_j:
                         key = str(purchased_items[i]) + " " + str(purchased_items[j])
-                    elif self.dataModel.getRating(uid, i) < self.dataModel.getRating(uid, j):
+                    elif rating_i < rating_j:
                         key = str(purchased_items[j]) + " " + str(purchased_items[i])
+                    else:
+                        continue
                     self.T[uid][key] = 1
+            # for i in purchased_items:
+            #     purchased_items = self.dataModel.getItemIDsFromUid(uid)
+                # unpurchased_items = random.sample(all_item_set.difference(purchased_items), self.sample_rate)
+                # for j in unpurchased_items:
+                #     key = str(i) + " " + str(j)
+                #     self.T[uid][key] = 1
 
         idf = {}
         pair_sum = [[0]*itemsNum for i in range(itemsNum)]
@@ -62,6 +75,8 @@ class VSRank(BaseEstimator):
             for t, times in self.T[uid].iteritems():
                 i1, i2 = t.split(" ")
                 diff = self.dataModel.getRating(uid, int(i1))-self.dataModel.getRating(uid, int(i2))
+                # if diff != 1:
+                #     print 'error!'
                 tf = log2(1+abs(diff))
                 if diff < 0:
                     tf = -tf
@@ -109,7 +124,8 @@ class VSRank(BaseEstimator):
             print 'not in test'
             return []
         else:
-            return self.recommend_listwise(userID)
+            # return self.recommend_listwise(userID)
+            return self.recommend_pairwise(userID)
 
     def recommend_pointwise(self, userID):
         #interactedItems = self.dataModel.getItemIDsFromUid(userID)
@@ -124,7 +140,58 @@ class VSRank(BaseEstimator):
         return [self.dataModel.getItemByIid(i) for i in r]
 
     def recommend_pairwise(self, userID):
-        pass
+        itemsNum = self.dataModel.getItemsNum()
+        N = itemsNum
+        recNum = self.n
+        pi = [0]*itemsNum
+        rank = []
+        for i in range(itemsNum):
+            sum1 = 0
+            sum2 = 0
+            for j in range(itemsNum):
+                if j != i:
+                    p = self.preference(userID, i, j)
+                    sum1 += p
+                    sum2 -= p
+            pi[i] = sum1 - sum2
+        I = set(i for i in range(itemsNum))
+        while recNum > 0:
+        # while len(I) > 0:
+            recNum -= 1
+            t = np.argmax(pi)
+            rank.append(t)
+            I.remove(t)
+            pi[t] = None
+            for i in I:
+                pi[i] += self.preference(userID, t, i) - self.preference(userID, i, t)
+        # r = [x for (x, y) in sorted(zip(range(itemsNum), rank), lambda a, b: cmp(a[1], b[1]))[:self.n]]
+        return [self.dataModel.getItemByIid(i) for i in rank]
+
+    def preference(self, uid, i1, i2):
+        nerghborhood = []
+        keystr = str(i1) + ' ' + str(i2)
+        keystr_ = str(i2) + ' ' + str(i1)
+        for i in range(self.dataModel.getUsersNum()):
+            if self.T[i].has_key(keystr) or self.T[i].has_key(keystr_):
+                nerghborhood.append(i)
+        distance = [0]*len(nerghborhood)
+        for i in range(len(nerghborhood)):
+            distance[i] = self.simiMatrix[uid][nerghborhood[i]]
+        nerghborhood = [x for (x, y) in sorted(zip(nerghborhood, distance), lambda a, b: cmp(a[1], b[1]), reverse=True)[:self.neighbornum]]
+        preference = 0.0
+        sum = 0.0
+        for i in nerghborhood:
+            rating1 = self.dataModel.getRating(i, i1)
+            rating2 = self.dataModel.getRating(i, i2)
+            sum += self.simiMatrix[uid][i]
+            if rating1 > rating2:
+                preference += self.simiMatrix[uid][i]
+            elif rating1 < rating2:
+                preference -= self.simiMatrix[uid][i]
+        if sum == 0:
+            return 0
+        else:
+            return preference/sum
 
     def recommend_listwise(self, userID):
         itemsNum = self.dataModel.getItemsNum()
